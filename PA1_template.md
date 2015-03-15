@@ -68,12 +68,13 @@ The median total number of steps taken per day is 10765.0.
 
 
 ```r
+# Calculate the interval means using the data with no NAs
 intervals_mean <- activity_no_na %>% group_by(interval) %>% summarise(steps = mean(steps))
 
 # Define a scaling for the X axis - every 3 hours
 scale <- seq(min(intervals_mean$interval), max(intervals_mean$interval), by=300)
 
-# Make some nice looking scale labels (e.g., 06:00, 09:00, etc)
+# Make scale labels that look like clock time (e.g., 06:00, 09:00, etc)
 scale_labs <- sub("^([[:digit:]]{2})", "\\1:", sprintf("%0.4d", scale))
 
 g <- ggplot(intervals_mean) + 
@@ -104,10 +105,11 @@ num_na <- nrow(activity[is.na(activity),])
 
 There were 2304 rows in the activity data with missing values.
 
-My strategy for filling the missing data was to use the average steps for a 5 minute interval to replace the NA value in an interval.
+My strategy for filling the missing data was to use the average steps for any given 5-minute interval (intervals_means) to replace an NA value for that interval.
 
 
 ```r
+# Copy the original data to fill in the NAs
 activity2 <- activity
 # Now walk through the data and replace NAs with the average steps for that interval.
 for (i in which(is.na(activity2$steps))) {
@@ -153,7 +155,7 @@ int2_mean <- activity2 %>% group_by(interval, day_type) %>% summarise(steps = me
 # Define a scaling for the X axis - every 3 hours
 scale <- seq(min(intervals_mean$interval), max(intervals_mean$interval), by=300)
 
-# Make some nice looking scale labels (e.g., 06:00, 09:00, etc)
+# Make scale labels that look like clock time (e.g., 06:00, 09:00, etc)
 scale_labs <- sub("^([[:digit:]]{2})", "\\1:", sprintf("%0.4d", scale))
 
 # Plot out the new steps means but separate by day type.
